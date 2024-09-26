@@ -2,3 +2,5 @@
 Data/
 Carbage/
 Data_Generation/logs/
+Data_Generation/module1/__pycache__/
+
