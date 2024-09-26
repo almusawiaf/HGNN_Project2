@@ -1,0 +1,2 @@
+[NbConvertApp] Converting notebook main.ipynb to notebook
+[NbConvertApp] Writing 38007 bytes to /lustre/home/almusawiaf/PhD_Projects/HGNN_Project2/Data_Generation/experiments/main_203_500_DMPLB_500_sample.ipynb

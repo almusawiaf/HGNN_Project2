@@ -13,15 +13,17 @@
 #SBATCH --job-name=data_generation         # Job name
 
 # Set environment variables
-export num_Sample=10000
 export NUM_DISEASES=203
 export DISEASE_FILE='DMPLB'
 export similarity_type='PC'
-export r_u_sampling='True'
-experiment_name="10000_sample"
+
+export num_Sample=45000
+export r_u_sampling='False'
+
+experiment_name="All_MIMIC"
 
 # Create a new directory with the job name and timestamp
-output_dir="/lustre/home/almusawiaf/PhD_Projects/HGNN_Project/version_2/SRC/Data_Generation/experiments"
+output_dir="/lustre/home/almusawiaf/PhD_Projects/HGNN_Project2/Data_Generation/experiments"
 
 # output_dir="output_${SLURM_JOB_NAME}_$(date +%Y%m%d_%H%M%S)"
 mkdir -p $output_dir
