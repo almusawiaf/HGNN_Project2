@@ -10,7 +10,7 @@
 #SBATCH --mem=250G                         # Allocate memory (512 GB in this case)
 
 
-#SBATCH --job-name=data_generation         # Job name
+#SBATCH --job-name=data_generation_All_MIMIC         # Job name
 
 # Set environment variables
 export NUM_DISEASES=203

@@ -184,39 +184,42 @@ class Meta_path:
             
 
         print(f'Number of meta-paths = {len(Ws)}')
-        print('==============================================================')
+        
+        selected_i = []
+
+        create_folder(f'{saving_path}/edges')
+        create_folder(f'{saving_path}/As')
+
+        # =============================================== Selecting top weighted edges =======================================
         for i, A in enumerate(Ws):
             # Check if A is sparse or dense
             if issparse(A):
-                non_zero_count = A.count_nonzero()
+                num_Zeros = A.count_nonzero()
             else:
-                non_zero_count = np.count_nonzero(A)
+                num_Zeros = np.count_nonzero(A)
             
-            print(f"Matrix {i}: {non_zero_count} non-zero elements")
+            print(f"Matrix {i}: {num_Zeros} non-zero elements")
             
-            if non_zero_count > 1000000:
-                B = keep_top_million(A, top_n=1000000)
-                print(f"\tSaving one million non-zero values... (after reduction: {B.count_nonzero()} non-zero elements)")
-            else:
-                B = A
-                print(f"\tSaving all non-zero values... ({non_zero_count} non-zero elements)")
+            if num_Zeros > 0:
+                # Only saving matrices with values...
+                if num_Zeros > 1000000:
+                    B = keep_top_million(A, top_n=1000000)
+                    print(f"\tSaving one million non-zero values... (after reduction: {B.count_nonzero()} non-zero elements)")
+                else:
+                    B = A
+                    print(f"\tSaving all non-zero values... ({num_Zeros} non-zero elements)")
         
-            # Convert to CSR format if not already sparse
-            if not issparse(B):
-                B = sparse.csr_matrix(B)
-            
-            # Save the sparse matrix
-            sparse.save_npz(f"{saving_path}/sparse_matrix_{i}.npz", B)
+                # Convert to CSR format if not already sparse
+                if not issparse(B):
+                    B = sparse.csr_matrix(B)
+                
+                # Save the sparse matrix
+                sparse.save_npz(f"{saving_path}/As/sparse_matrix_{i}.npz", B)
+                selected_i.append(i)
         
         
-        print('==============================================================')
-        num_As = len(Ws)
-        # Check if the directory exists, and create it if it doesn't
-        Nodes_path = f'{saving_path}/edges'
-        if not os.path.exists(Nodes_path):
-            os.makedirs(Nodes_path)
-        
-        D = [get_edges_dict(f'{saving_path}/sparse_matrix_{i}.npz') for i in range(num_As)]
+        # ======================================== Creating Unique list of edges (edge_list) =======================================       
+        D = [get_edges_dict(f'{saving_path}/sparse_matrix_{i}.npz') for i in selected_i]
         sorted_list_of_dicts = sorted(D, key=lambda x: len(x), reverse=True)
         
         unique_edges = set()
@@ -228,8 +231,9 @@ class Meta_path:
         with open(f'{saving_path}/edges/edge_list.pkl', 'wb') as file:
             pickle.dump(unique_edges, file)
         
-        print('done saving [unique edges]: ', len(unique_edges))
-        
+        print('done saving [unique edges]: ', len(unique_edges))        
+
+        # ======================================== Reflect the (edge_list) into all A's =======================================
         for i, d in enumerate(D):
             print(f'Working on {i}th file...')
             results = []
@@ -238,13 +242,14 @@ class Meta_path:
                     results.append(d[e])
                 else:
                     results.append(0)
-            print(f'\tdone...')
-            print('\tSaving...')
-        
+                    
             with open(f'{saving_path}/edges/edge_weight{i}.pkl', 'wb') as file:
                 pickle.dump(results, file)
         
             print(f'\tDone saving edge_weight{i}...')
+        # ======================================== saving selected i =======================================
+            
+            
     
     def subset_adjacency_matrix(self, subset_nodes):
 
@@ -258,6 +263,9 @@ class Meta_path:
         return adj_matrix
 
 
+def create_folder(the_path):
+    if not os.path.exists(the_path):
+        os.makedirs(the_path)
 
 def parallel_multiply_chunk(W1_csr, W2_csr, row_indices):
     # Multiply a chunk of rows from W1_csr with W2_csr

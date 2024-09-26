@@ -133,9 +133,7 @@ class Generate_HG:
 
         if self.sampling:
             print('\nWe are SAMPLING\n')
-            Sampled_Patients = random.sample(list(patients), self.num_Patients)
-
-        patients = Sampled_Patients
+            patients = random.sample(list(patients), self.num_Patients)
         
         # Filtering the data for selected patients and visits
         print('Use the patients inside the new DataFrame....')
