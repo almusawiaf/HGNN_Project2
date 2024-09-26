@@ -216,10 +216,13 @@ class Meta_path:
                 # Save the sparse matrix
                 sparse.save_npz(f"{saving_path}/As/sparse_matrix_{i}.npz", B)
                 selected_i.append(i)
+            else:
+                print(f'matrix {i} has zero values. Not saving...')
         
-        
+        print(f'selected i = {selected_i}')
+
         # ======================================== Creating Unique list of edges (edge_list) =======================================       
-        D = [get_edges_dict(f'{saving_path}/sparse_matrix_{i}.npz') for i in selected_i]
+        D = [get_edges_dict(f'{saving_path}/As/sparse_matrix_{i}.npz') for i in selected_i]
         sorted_list_of_dicts = sorted(D, key=lambda x: len(x), reverse=True)
         
         unique_edges = set()
@@ -243,12 +246,12 @@ class Meta_path:
                 else:
                     results.append(0)
                     
-            with open(f'{saving_path}/edges/edge_weight{i}.pkl', 'wb') as file:
+            with open(f'{saving_path}/edges/edge_weight{selected_i[i]}.pkl', 'wb') as file:
                 pickle.dump(results, file)
         
-            print(f'\tDone saving edge_weight{i}...')
+            print(f'\tDone saving edge_weight{selected_i[i]}...')
         # ======================================== saving selected i =======================================
-            
+        np.save(f'{saving_path}/edges/selected_i.npy', selected_i)
             
     
     def subset_adjacency_matrix(self, subset_nodes):

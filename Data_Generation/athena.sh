@@ -1,7 +1,7 @@
 #!/bin/bash
 
-#SBATCH --output=X_output_%j.txt           # Standard output
-#SBATCH --error=X_error_%j.txt             # Standard error
+#SBATCH --output=logs/X_output_%j.txt           # Standard output
+#SBATCH --error=logs/X_error_%j.txt             # Standard error
 
 #SBATCH --nodes=1                          # Request one node
 #SBATCH --ntasks=1                         # Request one task (process)
@@ -9,8 +9,9 @@
 #SBATCH --cpus-per-task=16                 # Number of CPU cores per task
 #SBATCH --mem=250G                         # Allocate memory (512 GB in this case)
 
+#SBATCH --job-name=data_generation_45000
 
-#SBATCH --job-name=data_generation_All_MIMIC         # Job name
+
 
 # Set environment variables
 export NUM_DISEASES=203
@@ -19,8 +20,8 @@ export similarity_type='PC'
 
 export num_Sample=45000
 export r_u_sampling='False'
+experiment_name="45000_patients"
 
-experiment_name="All_MIMIC"
 
 # Create a new directory with the job name and timestamp
 output_dir="/lustre/home/almusawiaf/PhD_Projects/HGNN_Project2/Data_Generation/experiments"
