@@ -10,59 +10,57 @@ from copy import deepcopy
 
 class Generate_HG:
     
-    def __init__(self, sampling = False, num_Patients = 500):
+    def __init__(self):
 
-        self.sampling = sampling
-        self.num_Patients = num_Patients
         self.folder_path = '/lustre/home/almusawiaf/PhD_Projects/MIMIC_resources'
-        # self.folder_path = '/home/almusawiaf/MyDocuments/PhD_Projects/Data/MIMIC_resources'
-        
+        # self.folder_path = '/home/almusawiaf/MyDocuments/PhD_Projects/Data/MIMIC_resources'        
         
         print('Loading the dataframes...')
         
-        df_Patients, new_Diagnosis, new_Prescriptions, new_Procedures, new_LabTest, new_MicroBio = self.load_patients_data()
-
-        new_LabTest2 = self.split_lab_test(new_LabTest)
+        new_Diagnosis, new_Prescriptions, new_Procedures, new_LabTest, new_MicroBio = self.load_patients_data()
         
         print('Extracting bipartite networks...')
 
+
+        CV = self.get_Bipartite(new_Diagnosis,    'SUBJECT_ID', 'HADM_ID',  'C', 'V', 'Visits')
+        VD = self.get_Bipartite(new_Diagnosis,    'HADM_ID', 'ICD9_CODE',   'V', 'D', 'Diagnosis')
+        VP = self.get_Bipartite(new_Procedures,   'HADM_ID', 'ICD9_CODE',   'V', 'P', 'Procedures')
+        VM = self.get_Bipartite(new_Prescriptions,'hadm_id', 'drug',        'V', 'M', 'Medications')
+        VL = self.get_Bipartite(new_LabTest,      'HADM_ID', 'ITEMID_FLAG', 'V', 'L', 'Lab tests')
+        VB = self.get_Bipartite(new_MicroBio,     'HADM_ID', 'SPEC_ITEMID', 'V', 'B', 'MicroBiology tests')
+        
         self.HG = nx.Graph()
-
-        self.get_Bipartite(new_Diagnosis,    'SUBJECT_ID', 'HADM_ID', 'C', 'V', 'Visits')
-        self.get_Bipartite(new_Diagnosis,    'HADM_ID', 'ICD9_CODE',  'V', 'D', 'Diagnosis')
-        self.get_Bipartite(new_Procedures,   'HADM_ID', 'ICD9_CODE', 'V', 'P', 'Procedures')
-        self.get_Bipartite(new_Prescriptions,'hadm_id', 'drug', 'V', 'M', 'Medications')
-        self.get_Bipartite(new_LabTest2,     'HADM_ID', 'ITEMID_FLAG', 'V', 'L', 'Lab tests')
-        self.get_Bipartite(new_MicroBio,     'HADM_ID', 'SPEC_ITEMID', 'V', 'B', 'MicroBiology tests')
-
-        G_statistics(self.HG)
-        self.HG = self.selecting_top_labs()
-      
+        edges_list = CV + VD + VP + VM + VB + VL      
+                
+        self.HG.add_edges_from(edges_list)
         G_statistics(self.HG)
         
-        self.HG = self.remove_isolated_nodes()        
+        self.selecting_top_labs()       
+        self.remove_isolated_nodes()        
+        self.update_statistics()
 
+        G_statistics(self.HG)
+
+        print('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+    
+    def update_statistics(self):
         Nodes = list(self.HG.nodes())
-
         self.Patients =    [v for v in Nodes if v[0]=='C']
         self.Visits =      [v for v in Nodes if v[0]=='V']
         self.Medications = [v for v in Nodes if v[0]=='M']
-        self.Diagnosis  =  [v for v in Nodes if v[0]=='D']
+        self.Diagnoses  =  [v for v in Nodes if v[0]=='D']
         self.Procedures =  [v for v in Nodes if v[0]=='P']
         self.Labs       =  [v for v in Nodes if v[0]=='L']
         self.MicroBio   =  [v for v in Nodes if v[0]=='B']
-        self.Nodes = Nodes
-        print('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+        self.Nodes = self.Patients  + self.Visits + self.Medications + self.Diagnoses + self.Procedures + self.Labs + self.MicroBio
+        
 
     def get_Bipartite(self, DF, id1, id2, c1, c2, msg):
         '''DF: dataframe, id1: row1, id2: row2, c1, c2: node code'''  
         print(f'\nExtracting and adding data of {msg}')
-        print(id1, id2, c1, c2)
-        print(DF.head(5))
 
         DF2    = self.getDict2(DF,  id1, id2, c1, c2)
-        edges  = self.getEdges(DF2, id1, id2)
-        self.HG.add_edges_from(edges)
+        return self.getEdges(DF2, id1, id2)
     
     def split_lab_test(self, lab_df):
         print('Splitting lab tests')
@@ -79,21 +77,15 @@ class Generate_HG:
         
         # Create the new DataFrame with 'HADM_ID' and the concatenated 'itemid_flag' column
         new_df = lab_df[['HADM_ID', 'ITEMID_FLAG']].copy()
-        
-        # Display the resulting DataFrame
-        print(new_df.head(10))
-        print('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+        print(f'Number of visits here is {len(new_df["HADM_ID"].unique())}')
 
         return new_df
 
     def remove_isolated_nodes(self):
         print('Removing isolated nodes')
-        isolated_nodes = [v for v in self.HG.nodes() if self.HG.degree(v)==0]
-        G_statistics(self.HG)    
-        new_HG = remove_patients_and_linked_visits(isolated_nodes, self.HG)
-        G_statistics(new_HG)    
-        print('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
-        return deepcopy(new_HG)
+        self.update_statistics()
+        isolated_nodes = [v for v in self.Nodes if self.HG.degree(v)==0]
+        self.HG = remove_patients_and_linked_visits(isolated_nodes, self.HG)
 
 
     def extract3(self, code):
@@ -103,21 +95,19 @@ class Generate_HG:
         return str(code)[:2]
     
     def load_patients_data(self):
-        import random
-        # 1. read the prescreption file...
-        
         # Loading the data
         df_Medications   = pd.read_csv(f'{self.folder_path}/PRESCRIPTIONS.csv')
-        df_Patients      = pd.read_csv(f'{self.folder_path}/PATIENTS.csv')
         df_DiagnosisICD  = pd.read_csv(f'{self.folder_path}/DIAGNOSES_ICD.csv')    # Diagnosis!
         df_ProceduresICD = pd.read_csv(f'{self.folder_path}/PROCEDURES_ICD.csv')    # Procedures!
         df_labs          = pd.read_csv(f'{self.folder_path}/LABEVENTS.csv')    # Lab test!
         df_microbio      = pd.read_csv(f'{self.folder_path}/MICROBIOLOGYEVENTS.csv')    # Microbiology!
         
+        
         # Handling missing values upfront (dropping rows with missing important columns)
         df_DiagnosisICD.dropna(subset=['HADM_ID', 'ICD9_CODE'], inplace=True)
         df_ProceduresICD.dropna(subset=['ICD9_CODE'], inplace=True)
         df_Medications.dropna(subset=['drug'], inplace=True)
+        df_labs.dropna(subset=['HADM_ID'], inplace=True)
         df_labs.dropna(subset=['ITEMID'], inplace=True)
         df_microbio.dropna(subset=['SPEC_ITEMID'], inplace=True)
         
@@ -125,19 +115,17 @@ class Generate_HG:
         visits = df_DiagnosisICD['HADM_ID'].unique()
         patients = df_DiagnosisICD['SUBJECT_ID'].unique()
 
-        if self.sampling:
-            print('\nWe are SAMPLING\n')
-            patients = random.sample(list(patients), self.num_Patients)
+        df_labs['HADM_ID'] = df_labs['HADM_ID'].astype(int)
 
-        
+        df_labs = self.split_lab_test(df_labs)        
+
         # Filtering the data for selected patients and visits
         print('Use the patients inside the new DataFrame....')
-        new_Patients = df_Patients[df_Patients['SUBJECT_ID'].isin(patients)].copy()
-        new_Diagnosis = df_DiagnosisICD[df_DiagnosisICD['SUBJECT_ID'].isin(patients)].copy()
-        new_Procedures = df_ProceduresICD[df_ProceduresICD['SUBJECT_ID'].isin(patients)].copy()
-        new_Medication = df_Medications[df_Medications['subject_id'].isin(patients)].copy()
-        new_LabTest = df_labs[df_labs['SUBJECT_ID'].isin(patients)].copy()
-        new_MicroBio = df_microbio[df_microbio['SUBJECT_ID'].isin(patients)].copy()
+        new_Diagnosis = df_DiagnosisICD[df_DiagnosisICD['HADM_ID'].isin(visits)].copy()
+        new_Procedures = df_ProceduresICD[df_ProceduresICD['HADM_ID'].isin(visits)].copy()
+        new_Medication = df_Medications[df_Medications['hadm_id'].isin(visits)].copy()
+        new_LabTest = df_labs[df_labs['HADM_ID'].isin(visits)].copy()
+        new_MicroBio = df_microbio[df_microbio['HADM_ID'].isin(visits)].copy()
         
         print('Dropping NaN visits')
         new_Diagnosis.dropna(subset=['HADM_ID'], inplace=True)
@@ -158,30 +146,28 @@ class Generate_HG:
         Procedures = sorted(new_Procedures['ICD9_CODE'].unique())
         Medication = sorted(new_Medication['drug'].unique())
         Diagnosis  = new_Diagnosis['ICD9_CODE'].unique()
-        LabTests   = new_LabTest['ITEMID'].unique()
+        LabTests   = new_LabTest['ITEMID_FLAG'].unique()
         MicroBio   = new_MicroBio['SPEC_ITEMID'].unique()
     
         print('General Information:\n---------------------------')
         print(f'Number of Patients = {len(patients)}')
+        print(f'Number of Visits = {len(visits)}')
         print(f'Number of Diagnosis = {len(Diagnosis)}')
         print(f'Number of procedures = {len(Procedures)}')
         print(f'Number of Medication = {len(Medication)}')
         print(f'Number of Lab tests  = {len(LabTests)}')
         print(f'Number of MicroBio   = {len(MicroBio)}')
         print('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
-        return new_Patients, new_Diagnosis, new_Medication, new_Procedures, new_LabTest, new_MicroBio
+        return new_Diagnosis, new_Medication, new_Procedures, new_LabTest, new_MicroBio
 
 
 
     def selecting_top_labs(self):
-        new_HG = deepcopy(self.HG)
-        Nodes = new_HG.nodes()
-        node_degrees = {n: new_HG.degree(n) for n in Nodes if n[0] == 'L'}
+        self.update_statistics()
+        node_degrees = {n: self.HG.degree(n) for n in self.Nodes if n[0] == 'L'}
         top_nodes = dict(sorted(node_degrees.items(), key=lambda item: item[1], reverse=True)[:480])
         labs_to_delete = [n for n in node_degrees if n not in top_nodes]
-        new_HG.remove_nodes_from(labs_to_delete)
-        print('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
-        return new_HG
+        self.HG.remove_nodes_from(labs_to_delete)
             
 
     def getDict2(self, df, id1, id2, c1, c2):
@@ -222,7 +208,7 @@ def G_statistics(G):
     Patients =    [v for v in Nodes if v[0]=='C']
     Visits =      [v for v in Nodes if v[0]=='V']
     Medications = [v for v in Nodes if v[0]=='M']
-    Diagnosis  =   [v for v in Nodes if v[0]=='D']
+    Diagnosis  =  [v for v in Nodes if v[0]=='D']
     Procedures =  [v for v in Nodes if v[0]=='P']
     Labs       =  [v for v in Nodes if v[0]=='L']
     MicroBio   =  [v for v in Nodes if v[0]=='B']
@@ -241,18 +227,30 @@ def G_statistics(G):
     print('------------------------------------------\n')
 
 def remove_patients_and_linked_visits(nodes, HG):
-    '''remove patients and their visits from HG'''
-    print('Number of PATIENTS to remove: ', len(nodes))
+    """
+    Remove patients and their linked visits from the graph HG.
     
-    new_HG = deepcopy(HG)
-    nodes_to_remove = nodes
-    for node in nodes:
-        for v in HG.neighbors(node):
-            if v[0]=='V':
-                nodes_to_remove.append(v)
-        nodes_to_remove.append(node)
-    print('Number of nodes to remove: ', len(nodes_to_remove))
-    new_HG.remove_nodes_from(nodes_to_remove)
-    return new_HG     
+    Parameters:
+    nodes (list): List of patient nodes to be removed.
+    HG (networkx.Graph): The heterogeneous graph.
+    
+    Returns:
+    networkx.Graph: The modified graph with patients and their visits removed.
+    """
+    print(f'Number of PATIENTS to remove: {len(nodes)}')
+    
+    # Using a set to store nodes to avoid duplicates
+    nodes_to_remove = set(nodes)
+    
+    # Find all visit nodes connected to the patient nodes
+    for patient in nodes:
+        visit_neighbors = {v for v in HG.neighbors(patient) if v[0] == 'V'}
+        nodes_to_remove.update(visit_neighbors)
+    
+    print(f'Number of nodes to remove: {len(nodes_to_remove)}')
 
+    # Removing nodes from the graph in place to avoid deepcopy
+    HG.remove_nodes_from(nodes_to_remove)
+    
+    return HG
 

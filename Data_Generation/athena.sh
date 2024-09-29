@@ -9,7 +9,7 @@
 #SBATCH --cpus-per-task=16                 # Number of CPU cores per task
 #SBATCH --mem=250G                         # Allocate memory (512 GB in this case)
 
-#SBATCH --job-name=data_generation_45000
+#SBATCH --job-name=data_generation_1000
 
 
 
@@ -18,9 +18,10 @@ export NUM_DISEASES=203
 export DISEASE_FILE='DMPLB'
 export similarity_type='PC'
 
-export num_Sample=45000
-export r_u_sampling='False'
-experiment_name="45000_patients"
+export num_Sample=1000
+export r_u_sampling='True'
+export SNF_ing='True'
+experiment_name="1000_patients"
 
 
 # Create a new directory with the job name and timestamp

@@ -10,8 +10,13 @@ from scipy import sparse
 from scipy.sparse import issparse
 import os        
 
+
+# from . import SNF_class as SNF_class
+# ======================= Computing the SNF-based Similarities ===========================
+
 class Meta_path:
     
+    # def __init__(self, HG, similarity_type = 'PC', saving_path = '', SNF_ing = False):
     def __init__(self, HG, similarity_type = 'PC', saving_path = ''):
         self.HG = HG
 
@@ -182,13 +187,19 @@ class Meta_path:
                   W_LVB,
                  ]
             
-
+        # ======================================================================================
         print(f'Number of meta-paths = {len(Ws)}')
         
         selected_i = []
 
         create_folder(f'{saving_path}/edges')
         create_folder(f'{saving_path}/As')
+
+        # ================================== Compute and add SNF-based similarity matrix =====================================
+        # if SNF_ing:
+        #     A_SNF = self.get_SNF()
+        #     Ws.append(A_SNF)
+        #     print('SNF model is completed and added to the Ws!!')
 
         # =============================================== Selecting top weighted edges =======================================
         for i, A in enumerate(Ws):
@@ -264,6 +275,10 @@ class Meta_path:
                 adj_matrix[:, i] = 0  # Zero out the column
         
         return adj_matrix
+    
+    def get_SNF(self):
+        SNF_inst = SNF_class(self.HG, self.Nodes)
+        return SNF_inst.A
 
 
 def create_folder(the_path):
