@@ -15,13 +15,13 @@
 
 # Set environment variables
 export NUM_DISEASES=203
-export DISEASE_FILE='DMPLB'
+export DISEASE_FILE='DMPLB2'
 export similarity_type='PC'
 
-export num_Sample=1000
+export num_Sample=10000
 export r_u_sampling='True'
-export SNF_ing='True'
-experiment_name="1000_patients"
+export SNF_ing='False'
+experiment_name="10000_patients"
 
 
 # Create a new directory with the job name and timestamp

@@ -109,7 +109,7 @@ class Generate_HG:
         df_Medications.dropna(subset=['drug'], inplace=True)
         df_labs.dropna(subset=['HADM_ID'], inplace=True)
         df_labs.dropna(subset=['ITEMID'], inplace=True)
-        df_microbio.dropna(subset=['SPEC_ITEMID'], inplace=True)
+        df_microbio.dropna(subset=['ORG_ITEMID'], inplace=True)
         
         # Extract unique visits and patients from the diagnosis DataFrame
         visits = df_DiagnosisICD['HADM_ID'].unique()
