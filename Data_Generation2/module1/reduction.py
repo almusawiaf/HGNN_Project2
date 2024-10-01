@@ -31,8 +31,8 @@ class Reduction:
         3. convert them to edge_list
         4. save the final edge_weight per matrix.'''
         
-    def __init__(self, saving_path = ''):
-        selected_i = []                
+    def __init__(self, saving_path = '', gpu = False):
+                        
         Ws1 = self.read_Ws(saving_path, 'As')
         # self.Ws2 = self.read_Ws(saving_path, 'Cosine_As')
         Ws = self.selecting_high_edges(Ws1)
