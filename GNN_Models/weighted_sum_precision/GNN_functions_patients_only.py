@@ -515,7 +515,10 @@ def main(file_path,
 
     labels = [f'Class {i}' for i in range(num_classes)]  # Replace with actual class names if available
     create_multilabel_confusion_matrix(pred, correct, labels)
-
+    
+    print('The weights of the similarity matrices are as follow:')
+    print(model.get_weights().cpu().detach().numpy())
+    
     return losses, val_precisions
 
 

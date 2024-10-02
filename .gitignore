@@ -3,6 +3,7 @@ Data/
 Carbage/
 data_generation/
 Data_Generation2/logs/
+Data_Generation2/experiments/
 Data_Generation2/module1/__pycache__/
 Data_Generation2/X/
 GNN_Models/logs/

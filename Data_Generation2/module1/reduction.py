@@ -53,7 +53,7 @@ class Reduction:
             
             if num_non_zeros > 0:
                 if num_non_zeros > 1000000:
-                    B = keep_top_million_dict(A, top_n=1000000)  # Define this function to keep top N edges in the dictionary
+                    B = keep_top_million(A, top_n=1000000)  # Define this function to keep top N edges in the dictionary
                     print(f"\tSaving one million non-zero values... (after reduction: {len(B)} non-zero elements)")
                 else:
                     B = A

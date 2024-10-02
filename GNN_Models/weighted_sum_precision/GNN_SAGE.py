@@ -15,6 +15,9 @@ class WeightedSumLayer(torch.nn.Module):
         # Weighted sum of the adjacency matrices
         weighted_sum = sum(w * A for w, A in zip(self.weights, adjacency_matrices))
         return weighted_sum
+    
+    def get_weights(self):
+        return self.weights
 
 class SAGE_MLC(torch.nn.Module):
     def __init__(self, num_features, num_classes, hidden_channels=16, num_matrices=2):
