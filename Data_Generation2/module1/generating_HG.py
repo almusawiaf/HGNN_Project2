@@ -10,10 +10,9 @@ from copy import deepcopy
 
 class Generate_HG:
     
-    def __init__(self):
+    def __init__(self, folder_path):
 
-        self.folder_path = '/lustre/home/almusawiaf/PhD_Projects/MIMIC_resources'
-        # self.folder_path = '/home/almusawiaf/MyDocuments/PhD_Projects/Data/MIMIC_resources'        
+        self.folder_path = folder_path
         
         print('Loading the dataframes...')
         
