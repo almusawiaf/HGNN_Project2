@@ -60,71 +60,73 @@ class Meta_path:
         # Heterogeneous similarity
         
         ## patient-visit-item
-        W_CVM = M(W_cv, W_vm)
-        W_CVD = M(W_cv, W_vd)
-        W_CVP = M(W_cv, W_vp)
-        W_CVL = M(W_cv, W_vl)
-        W_CVB = M(W_cv, W_vb)
+        print('Patients:')
+        W_CVM = M(W_cv, W_vm, 'Patient-Medication')
+        W_CVD = M(W_cv, W_vd, 'Patient-Diagnosis')
+        W_CVP = M(W_cv, W_vp, 'Patient-Procedure')
+        W_CVL = M(W_cv, W_vl, 'Patient-Lab')
+        W_CVB = M(W_cv, W_vb, 'Patient-MicroBiology')
         
-        W_DVM = M(W_vd.T, W_vm)
-        W_DVP = M(W_vd.T, W_vp)
-        W_DVL = M(W_vd.T, W_vl)
-        W_DVB = M(W_vd.T, W_vb)
+        print('Diagnoses:')
+        W_DVM = M(W_vd.T, W_vm, 'Diagnosis-Medication')
+        W_DVP = M(W_vd.T, W_vp, 'Diagnosis-Procedure')
+        W_DVL = M(W_vd.T, W_vl, 'Diagnosis-Lab')
+        W_DVB = M(W_vd.T, W_vb, 'Diagnosis-MicroBiology')
         
-        W_PVM = M(W_vp.T, W_vm)
-        W_PVL = M(W_vp.T, W_vl)
-        W_PVB = M(W_vp.T, W_vb)
+        print('Procedures:')
+        W_PVM = M(W_vp.T, W_vm, 'Procedure-Medication')
+        W_PVL = M(W_vp.T, W_vl, 'Procedure-Lab')
+        W_PVB = M(W_vp.T, W_vb, 'Procedure-MicroBiology')
         
-        W_MVL = M(W_vm.T, W_vl)
-        W_MVB = M(W_vm.T, W_vb)
+        W_MVL = M(W_vm.T, W_vl, 'Medication-Lab')
+        W_MVB = M(W_vm.T, W_vb, 'Medication-MicroBiology')
         
-        W_LVB = M(W_vl.T, W_vb)
+        W_LVB = M(W_vl.T, W_vb, 'Lab-MicroBiology')
         
-        # Homogeneous similarity        
+        print('Homogeneous similarity')        
+        print('1. Patient-Patient')
+        W_CVMVC = M(W_CVM, W_CVM.T, 'Patient-Visit-Medication-Visit-Patient')
+        W_CVDVC = M(W_CVD, W_CVD.T, 'Patient-Visit-Diagnosis-Visit-Patient')
+        W_CVPVC = M(W_CVP, W_CVP.T, 'Patient-Visit-Procedure-Visit-Patient')
+        W_CVLVC = M(W_CVL, W_CVL.T, 'Patient-Visit-Lab-Visit-Patient')
+        W_CVBVC = M(W_CVB, W_CVB.T, 'Patient-Visit-MicroBiology-Visit-Patient')
         
-        W_CVMVC = M(W_CVM, W_CVM.T)
-        W_CVDVC = M(W_CVD, W_CVD.T)
-        W_CVPVC = M(W_CVP, W_CVP.T)
-        W_CVLVC = M(W_CVL, W_CVL.T)
-        W_CVBVC = M(W_CVB, W_CVB.T)
-        print('Patient-Patient completed!\n')
+        print('2. visit-visit')
+        W_VMV = M(W_vm, W_vm.T, 'Visit-Medication-Visit')
+        W_VDV = M(W_vd, W_vd.T, 'Visit-Diagnosis-Visit')
+        W_VPV = M(W_vp, W_vp.T, 'Visit-Procedure-Visit')
+        W_VLV = M(W_vl, W_vl.T, 'Visit-Lab-Visit')
+        W_VBV = M(W_vb, W_vb.T, 'Visit-MicroBiology-Visit')
         
-        W_VMV = M(W_vm, W_vm.T)
-        W_VDV = M(W_vd, W_vd.T)
-        W_VPV = M(W_vp, W_vp.T)
-        W_VLV = M(W_vl, W_vl.T)
-        W_VBV = M(W_vb, W_vb.T)
-        print('visit-visit completed!\n')
+        # W_DVMVD = M(W_DVM, W_DVM.T)
+        # W_DVPVD = M(W_DVP, W_DVP.T)
+        # W_DVLVD = M(W_DVL, W_DVL.T)
+        # W_DVBVD = M(W_DVB, W_DVB.T)
+        # print('Diagnoses-Diagnoses completed!\n')
         
-        W_DVMVD = M(W_DVM, W_DVM.T)
-        W_DVPVD = M(W_DVP, W_DVP.T)
-        W_DVLVD = M(W_DVL, W_DVL.T)
-        W_DVBVD = M(W_DVB, W_DVB.T)
-        print('Diagnoses-Diagnoses completed!\n')
+        # W_MVDVM = M(W_DVM.T, W_DVM)
+        # W_MVPVM = M(W_PVM.T, W_PVM)
+        # W_MVLVM = M(W_MVL, W_MVL.T)
+        # W_MVBVM = M(W_MVB, W_MVB.T)
+        # print('Med-Med completed!\n')
         
-        W_MVDVM = M(W_DVM.T, W_DVM)
-        W_MVPVM = M(W_PVM.T, W_PVM)
-        W_MVLVM = M(W_MVL, W_MVL.T)
-        W_MVBVM = M(W_MVB, W_MVB.T)
-        print('Med-Med completed!\n')
+        # W_PVDVP = M(W_DVP.T, W_DVP)
+        # W_PVMVP = M(W_PVM, W_PVM.T)
+        # W_PVLVP = M(W_PVL, W_PVL.T)
+        # W_PVBVP = M(W_PVB, W_PVB.T)
+        # print('Proced-Proced completed!\n')
         
-        W_PVDVP = M(W_DVP.T, W_DVP)
-        W_PVMVP = M(W_PVM, W_PVM.T)
-        W_PVLVP = M(W_PVL, W_PVL.T)
-        W_PVBVP = M(W_PVB, W_PVB.T)
-        print('Proced-Proced completed!\n')
+        # W_LVDVL = M(W_DVL.T, W_DVL)
+        # W_LVPVL = M(W_PVL.T, W_PVL)
+        # W_LVMVL = M(W_MVL.T, W_MVL)
+        # W_LVBVL = M(W_LVB, W_LVB.T)
+        # print('Labs-Labs completed!\n')
         
-        W_LVDVL = M(W_DVL.T, W_DVL)
-        W_LVPVL = M(W_PVL.T, W_PVL)
-        W_LVMVL = M(W_MVL.T, W_MVL)
-        W_LVBVL = M(W_LVB, W_LVB.T)
-        print('Labs-Labs completed!\n')
-        
-        W_BVDVB = M(W_DVB.T, W_DVB)
-        W_BVMVB = M(W_MVB.T, W_MVB)
-        W_BVPVB = M(W_PVB.T, W_PVB)
-        W_BVLVB = M(W_LVB, W_LVB.T)
-        print('Micro-Bio - Micro-Bio completed!\n')
+        # W_BVDVB = M(W_DVB.T, W_DVB)
+        # W_BVMVB = M(W_MVB.T, W_MVB)
+        # W_BVPVB = M(W_PVB.T, W_PVB)
+        # W_BVLVB = M(W_LVB, W_LVB.T)
+        # print('Micro-Bio - Micro-Bio completed!\n')
 
         print('=============================================================')
         print('Multiplication phase...\n')
@@ -187,12 +189,12 @@ class Meta_path:
                   W_LVB,
                  ]
         else:
-            Ws = [W_CVMVC, W_CVDVC, W_CVPVC, W_CVLVC, W_CVBVC,
+            Ws = [W_cv, W_vd, W_vm, W_vp, W_vl, W_vb,
+                  W_CVMVC, W_CVDVC, W_CVPVC, W_CVLVC, W_CVBVC,
                   W_VMV,   W_VDV,   W_VPV,   W_VLV,   W_VBV,          
-                  W_DVMVD, W_DVPVD, W_DVLVD, W_DVBVD, 
-                  W_MVPVM, W_MVDVM, W_MVLVM, W_MVBVM,        
-                  W_PVDVP, W_PVMVP, W_PVLVP, W_PVBVP,        
-                  W_cv, W_vd, W_vm, W_vp, W_vl, W_vb,       
+                #   W_DVMVD, W_DVPVD, W_DVLVD, W_DVBVD, 
+                #   W_MVPVM, W_MVDVM, W_MVLVM, W_MVBVM,        
+                #   W_PVDVP, W_PVMVP, W_PVLVP, W_PVBVP,        
                   W_CVM, W_CVD, W_CVP, W_CVL, W_CVB,      
                   W_DVM, W_DVP, W_DVL, W_DVB,
                   W_PVM, W_PVL, W_PVB,
@@ -233,7 +235,9 @@ def parallel_multiply_chunk(W1_csr, W2_csr, row_indices):
     result_chunk = W1_csr[row_indices].dot(W2_csr)
     return result_chunk
 
-def M(W1, W2, n_jobs=-1):
+def M(W1, W2, n_jobs=-1, msg = ''):
+    if msg!='':
+        print('\tWorking on: {msg}')
     # Convert to CSR format if not already
     W1_csr = csr_matrix(W1) if not isinstance(W1, csr_matrix) else W1
     W2_csr = csr_matrix(W2) if not isinstance(W2, csr_matrix) else W2
