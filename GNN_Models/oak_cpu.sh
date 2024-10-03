@@ -1,7 +1,7 @@
 #!/bin/bash
 
-#SBATCH --output=logs/%j_output.txt            # Standard output
-#SBATCH --error=logs/%j_error.txt              # Standard error
+#SBATCH --output=logs/output_%j.txt            # Standard output
+#SBATCH --error=logs/error_%j.txt              # Standard error
 
 #SBATCH --nodes=1                         # Request one node
 #SBATCH --ntasks=1                        # Request one task (process)
@@ -15,10 +15,10 @@
 # Set environment variables
 export num_Sample=45454
 export NUM_DISEASES=203
-export NUM_TOP_DISEASES=10
+export NUM_TOP_DISEASES=203
 export DISEASE_FILE='DMPLB2'
-export num_Meta_Path=22
-export num_epochs=50
+export num_Meta_Path=30
+export num_epochs=250
 export experiment_name='DMPLB2'
 
 # output_dir="/lustre/home/almusawiaf/PhD_Projects/HGNN_Project2/GNN_Models/experiments/${NUM_DISEASES}_Diagnoses/${DISEASE_FILE}/${num_Sample}"
