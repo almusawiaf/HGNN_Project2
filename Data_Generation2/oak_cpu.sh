@@ -31,11 +31,5 @@ output_dir="/home/almusawiaf/MyDocuments/PhD_Projects/HGNN_Project2/Data_Generat
 # output_dir="output_${SLURM_JOB_NAME}_$(date +%Y%m%d_%H%M%S)"
 mkdir -p $output_dir
 
-# Pipeline of actions
-jupyter nbconvert --to notebook --execute main_cpu.ipynb                  --output $output_dir/main_cpu_${NUM_DISEASES}_${num_Sample}_${DISEASE_FILE}_${experiment_name}.ipynb
-
-# jupyter nbconvert --to notebook --execute b_data_preparation.ipynb      --output $output_dir/b_data_preparation.ipynb
-# # jupyter nbconvert --to notebook --execute c_StructureSimilarity.ipynb --output $output_dir/c_StructureSimilarity.ipynb
-# # jupyter nbconvert --to notebook --execute d_SNF.ipynb                 --output $output_dir/d_SNF.ipynb
-# # jupyter nbconvert --to notebook --execute e_convert_SNF_to_edge.ipynb --output $output_dir/e_convert_SNF_to_edge.ipynb
-# jupyter nbconvert --to notebook --execute f_Y_superclass.ipynb          --output $output_dir/f_Y_superclass.ipynb
+# jupyter nbconvert --to notebook --execute main_cpu.ipynb                  --output $output_dir/main_cpu_${NUM_DISEASES}_${num_Sample}_${DISEASE_FILE}_${experiment_name}.ipynb
+jupyter nbconvert --to notebook --execute main_Reduction_Only.ipynb                  --output $output_dir/main_Reduction_Only_${NUM_DISEASES}_${num_Sample}_${DISEASE_FILE}_${experiment_name}.ipynb

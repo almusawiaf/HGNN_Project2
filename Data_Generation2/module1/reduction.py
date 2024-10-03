@@ -40,8 +40,15 @@ class Reduction:
         
     def read_Ws(self, saving_path, folder_name):
         selected_i = load_dict_from_pickle(f"{saving_path}/{folder_name}/selected_i.pkl")
-        return [get_edges_dict(f'{saving_path}/{folder_name}/sparse_matrix_{i}.npz') for i in selected_i]
+        return [self.get_edges_dict(f'{saving_path}/{folder_name}/sparse_matrix_{i}.npz') for i in selected_i]
 
+    def get_edges_dict(self, the_path):
+        A = sparse.load_npz(the_path)
+        if not isinstance(A, scipy.sparse.coo_matrix):
+            A = A.tocoo()
+        filtered_entries = (A.col > A.row) & (A.data > 0)
+        upper_triangle_positive = {(row, col): data for row, col, data in zip(A.row[filtered_entries], A.col[filtered_entries], A.data[filtered_entries])}
+        return upper_triangle_positive
 
     def selecting_high_edges(self, Ws):
         '''Selecting top weighted edges'''
@@ -105,48 +112,53 @@ def create_folder(the_path):
         os.makedirs(the_path)
 
 
+def keep_top_million(edge_dict, top_n=1000000):
+    if len(edge_dict) <= top_n:
+        return edge_dict
+    
+    # Step 1: Sort the dictionary by values (edge weights) and keep only the top N
+    sorted_edges = sorted(edge_dict.items(), key=lambda item: item[1], reverse=True)
+    
+    # Step 2: Keep the top N edges
+    top_edges = dict(sorted_edges[:top_n])
+    
+    return top_edges
 
-def keep_top_million(sparse_matrix, top_n=1000000):
-    # Convert to CSR if the matrix is dense
-    if isinstance(sparse_matrix, np.ndarray):
-        sparse_matrix = sparse.csr_matrix(sparse_matrix)
+# def keep_top_million(sparse_matrix, top_n=1000000):
+#     # Convert to CSR if the matrix is dense
+#     if isinstance(sparse_matrix, np.ndarray):
+#         sparse_matrix = sparse.csr_matrix(sparse_matrix)
 
-    # Step 1: Find the threshold for the top million values
-    if sparse_matrix.nnz <= top_n:
-        # If the matrix has fewer non-zeros than top_n, return it as is
-        return sparse_matrix
+#     # Step 1: Find the threshold for the top million values
+#     if sparse_matrix.nnz <= top_n:
+#         # If the matrix has fewer non-zeros than top_n, return it as is
+#         return sparse_matrix
     
-    # Extract the non-zero data from the sparse matrix
-    sorted_data = np.sort(sparse_matrix.data)[-top_n]
+#     # Extract the non-zero data from the sparse matrix
+#     sorted_data = np.sort(sparse_matrix.data)[-top_n]
     
-    # Step 2: Filter the sparse matrix based on this threshold
-    mask = sparse_matrix.data >= sorted_data
+#     # Step 2: Filter the sparse matrix based on this threshold
+#     mask = sparse_matrix.data >= sorted_data
     
-    # Apply the mask to keep only values in the top million
-    filtered_data = sparse_matrix.data[mask]
-    filtered_indices = sparse_matrix.indices[mask]
-    filtered_indptr = np.zeros(sparse_matrix.shape[0] + 1, dtype=int)
+#     # Apply the mask to keep only values in the top million
+#     filtered_data = sparse_matrix.data[mask]
+#     filtered_indices = sparse_matrix.indices[mask]
+#     filtered_indptr = np.zeros(sparse_matrix.shape[0] + 1, dtype=int)
     
-    # Recalculate indptr array based on the filtered data
-    current_index = 0
-    for i in range(sparse_matrix.shape[0]):
-        row_start = sparse_matrix.indptr[i]
-        row_end = sparse_matrix.indptr[i+1]
+#     # Recalculate indptr array based on the filtered data
+#     current_index = 0
+#     for i in range(sparse_matrix.shape[0]):
+#         row_start = sparse_matrix.indptr[i]
+#         row_end = sparse_matrix.indptr[i+1]
         
-        # Count non-zero elements in the current row that are in the top million
-        filtered_indptr[i+1] = filtered_indptr[i] + np.sum(mask[row_start:row_end])
+#         # Count non-zero elements in the current row that are in the top million
+#         filtered_indptr[i+1] = filtered_indptr[i] + np.sum(mask[row_start:row_end])
     
-    # Create a new sparse matrix with the filtered data
-    filtered_matrix = sparse.csr_matrix((filtered_data, filtered_indices, filtered_indptr), shape=sparse_matrix.shape)
+#     # Create a new sparse matrix with the filtered data
+#     filtered_matrix = sparse.csr_matrix((filtered_data, filtered_indices, filtered_indptr), shape=sparse_matrix.shape)
     
-    return filtered_matrix
+#     return filtered_matrix
 
 
-def get_edges_dict(the_path):
-    A = sparse.load_npz(the_path)
-    if not isinstance(A, scipy.sparse.coo_matrix):
-        A = A.tocoo()
-    filtered_entries = (A.col > A.row) & (A.data > 0)
-    upper_triangle_positive = {(row, col): data for row, col, data in zip(A.row[filtered_entries], A.col[filtered_entries], A.data[filtered_entries])}
-    return upper_triangle_positive
+
     
