@@ -13,28 +13,19 @@
 
 # Set environment variables
 export MIMIC_Path='/home/almusawiaf/MyDocuments/PhD_Projects/Data/MIMIC_resources'
-export disease_data_path='/home/almusawiaf/PhD_Projects/HGNN_Project2/Data'
+export disease_data_path='../Data'
 
 export NUM_DISEASES=203
 export DISEASE_FILE='DMPLB2'
 export similarity_type='PC'
 
-export num_Sample=45555
-export r_u_sampling='False'
-export SNF_ing='False'
-experiment_name="45555_patients"
+export num_Sample=10010
+export r_u_sampling='True'
+export PSGs_ing='True'
+experiment_name="10K_patients_PSGs"
 
 
-# Create a new directory with the job name and timestamp
 output_dir="/lustre/home/almusawiaf/PhD_Projects/HGNN_Project2/Data_Generation2/experiments"
-
-# output_dir="output_${SLURM_JOB_NAME}_$(date +%Y%m%d_%H%M%S)"
 mkdir -p $output_dir
 
-# Pipeline of actions
 jupyter nbconvert --to notebook --execute main_cpu.ipynb                  --output $output_dir/main_cpu_${NUM_DISEASES}_${num_Sample}_${DISEASE_FILE}_${experiment_name}.ipynb
-# jupyter nbconvert --to notebook --execute b_data_preparation.ipynb      --output $output_dir/b_data_preparation.ipynb
-# # jupyter nbconvert --to notebook --execute c_StructureSimilarity.ipynb --output $output_dir/c_StructureSimilarity.ipynb
-# # jupyter nbconvert --to notebook --execute d_SNF.ipynb                 --output $output_dir/d_SNF.ipynb
-# # jupyter nbconvert --to notebook --execute e_convert_SNF_to_edge.ipynb --output $output_dir/e_convert_SNF_to_edge.ipynb
-# jupyter nbconvert --to notebook --execute f_Y_superclass.ipynb          --output $output_dir/f_Y_superclass.ipynb

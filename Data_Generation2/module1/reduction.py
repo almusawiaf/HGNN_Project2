@@ -31,16 +31,23 @@ class Reduction:
         3. convert them to edge_list
         4. save the final edge_weight per matrix.'''
         
-    def __init__(self, saving_path = '', gpu = False):
-                        
+    def __init__(self, base_path = '', gpu = False, PSGs = False):
+        saving_path = f'{base_path}/HGNN_data/'                        
         Ws1 = self.read_Ws(saving_path, 'As')
-        # self.Ws2 = self.read_Ws(saving_path, 'Cosine_As')
+        if PSGs:
+            Ws2 = self.read_PSGs(base_path)
+            Ws1 = Ws1 + Ws2
+
         Ws = self.selecting_high_edges(Ws1)
         self.final_Ws_with_unique_list_of_edges(Ws, saving_path)        
         
     def read_Ws(self, saving_path, folder_name):
         selected_i = load_dict_from_pickle(f"{saving_path}/{folder_name}/selected_i.pkl")
+        print(selected_i[-1])
         return [self.get_edges_dict(f'{saving_path}/{folder_name}/sparse_matrix_{i}.npz') for i in selected_i]
+
+    def read_PSGs(self, base_path):
+        return [self.get_edges_dict(f'{base_path}/PSGs/{i}.npz') for i in ['B', 'D', 'L', 'M', 'P']]
 
     def get_edges_dict(self, the_path):
         A = sparse.load_npz(the_path)
@@ -123,42 +130,3 @@ def keep_top_million(edge_dict, top_n=1000000):
     top_edges = dict(sorted_edges[:top_n])
     
     return top_edges
-
-# def keep_top_million(sparse_matrix, top_n=1000000):
-#     # Convert to CSR if the matrix is dense
-#     if isinstance(sparse_matrix, np.ndarray):
-#         sparse_matrix = sparse.csr_matrix(sparse_matrix)
-
-#     # Step 1: Find the threshold for the top million values
-#     if sparse_matrix.nnz <= top_n:
-#         # If the matrix has fewer non-zeros than top_n, return it as is
-#         return sparse_matrix
-    
-#     # Extract the non-zero data from the sparse matrix
-#     sorted_data = np.sort(sparse_matrix.data)[-top_n]
-    
-#     # Step 2: Filter the sparse matrix based on this threshold
-#     mask = sparse_matrix.data >= sorted_data
-    
-#     # Apply the mask to keep only values in the top million
-#     filtered_data = sparse_matrix.data[mask]
-#     filtered_indices = sparse_matrix.indices[mask]
-#     filtered_indptr = np.zeros(sparse_matrix.shape[0] + 1, dtype=int)
-    
-#     # Recalculate indptr array based on the filtered data
-#     current_index = 0
-#     for i in range(sparse_matrix.shape[0]):
-#         row_start = sparse_matrix.indptr[i]
-#         row_end = sparse_matrix.indptr[i+1]
-        
-#         # Count non-zero elements in the current row that are in the top million
-#         filtered_indptr[i+1] = filtered_indptr[i] + np.sum(mask[row_start:row_end])
-    
-#     # Create a new sparse matrix with the filtered data
-#     filtered_matrix = sparse.csr_matrix((filtered_data, filtered_indices, filtered_indptr), shape=sparse_matrix.shape)
-    
-#     return filtered_matrix
-
-
-
-    

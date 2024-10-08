@@ -19,9 +19,9 @@ export NUM_DISEASES=203
 export DISEASE_FILE='DMPLB2'
 export similarity_type='PC'
 
-export num_Sample=45454
-export r_u_sampling='False'
-export SNF_ing='False'
+export num_Sample=10010
+export r_u_sampling='True'
+export PSGs_ing='True'
 experiment_name="ALL_MIMIC"
 
 
