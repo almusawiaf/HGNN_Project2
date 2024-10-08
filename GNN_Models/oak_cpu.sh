@@ -18,8 +18,8 @@ export NUM_DISEASES=203
 export NUM_TOP_DISEASES=10
 export DISEASE_FILE='DMPLB2'
 export num_Meta_Path=30
-export num_epochs=250
-export experiment_name='DMPLB2'
+export num_epochs=1000
+export experiment_name='DMPLB2_1000_epochs2'
 
 # output_dir="/lustre/home/almusawiaf/PhD_Projects/HGNN_Project2/GNN_Models/experiments/${NUM_DISEASES}_Diagnoses/${DISEASE_FILE}/${num_Sample}"
 output_dir="experiments/${NUM_DISEASES}_Diagnoses/${DISEASE_FILE}/${num_Sample}"

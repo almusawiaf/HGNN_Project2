@@ -475,7 +475,7 @@ def main(file_path,
         cur_top_k_1 = val_precision['top_k_1']
         
         
-        print(f'Epoch: {epoch}/{num_epochs}, Loss: {loss.item():.4f}, Val Precision: {cur_prec:.4f}, ACC: {cur_acc:.4f}, top_k: {cur_top_k:.4f}, top_k=1: {cur_top_k_1:.4f}')
+        # print(f'Epoch: {epoch}/{num_epochs}, Loss: {loss.item():.4f}, Val Precision: {cur_prec:.4f}, ACC: {cur_acc:.4f}, top_k: {cur_top_k:.4f}, top_k=1: {cur_top_k_1:.4f}')
 
         losses.append(loss.item())
         val_precisions.append(val_precision)
