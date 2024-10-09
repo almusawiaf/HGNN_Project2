@@ -10,7 +10,6 @@ This project generates a heterogeneous graph based on patient data extracted fro
   - [Outputs](#outputs)
   - [Main Functions](#main-functions)
 - [Graph Components](#graph-components)
-- [License](#license)
 
 ## Introduction
 
