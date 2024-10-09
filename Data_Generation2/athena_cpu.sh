@@ -19,10 +19,10 @@ export NUM_DISEASES=203
 export DISEASE_FILE='DMPLB2'
 export similarity_type='PC'
 
-export num_Sample=10010
+export num_Sample=245
 export r_u_sampling='True'
 export PSGs_ing='True'
-experiment_name="10K_patients_PSGs"
+experiment_name="245K_patients_PSGs"
 
 
 output_dir="/lustre/home/almusawiaf/PhD_Projects/HGNN_Project2/Data_Generation2/experiments"
