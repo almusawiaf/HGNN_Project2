@@ -5,8 +5,6 @@ This project generates a heterogeneous graph based on patient data extracted fro
 ## Table of Contents
 
 - [Introduction](#introduction)
-- [Requirements](#requirements)
-- [Installation](#installation)
 - [Usage](#usage)
   - [Inputs](#inputs)
   - [Outputs](#outputs)
@@ -17,25 +15,6 @@ This project generates a heterogeneous graph based on patient data extracted fro
 ## Introduction
 
 This repository contains a Python class `Generate_HG` that constructs a heterogeneous graph (HG) using patient data from CSV files, including diagnosis, prescriptions, procedures, lab tests, and microbiology tests. The graph is built using the NetworkX library and contains bipartite networks between visits and various medical entities. Only patients with available diagnoses are included.
-
-## Requirements
-
-To run the code, the following packages must be installed:
-
-- **Python 3.x**
-- **pandas**
-- **networkx**
-
-You can install the required packages using pip:
-
-```bash
-pip install pandas networkx
-
-## Installation
-
-1. Clone this repository or download the code files.
-2. Ensure that the input CSV files (described in the **Usage** section) are placed in a specified folder.
-3. Install the required Python libraries using the command provided in the **Requirements** section.
 
 ## Usage
 
