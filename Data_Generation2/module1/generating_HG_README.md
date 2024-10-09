@@ -16,15 +16,15 @@ This project generates a heterogeneous graph based on patient data extracted fro
 
 ## Introduction
 
-This repository contains a Python class `Generate_HG` that constructs a heterogeneous graph (HG) using patient data from diagnosis, prescriptions, procedures, lab tests, and microbiology test CSV files. The graph is created using the NetworkX library and contains bipartite networks between visits and other medical entities. Only patients with diagnoses are included.
+This repository contains a Python class `Generate_HG` that constructs a heterogeneous graph (HG) using patient data from CSV files, including diagnosis, prescriptions, procedures, lab tests, and microbiology tests. The graph is built using the NetworkX library and contains bipartite networks between visits and various medical entities. Only patients with available diagnoses are included.
 
 ## Requirements
 
 To run the code, the following packages must be installed:
 
-- Python 3.x
-- pandas
-- networkx
+- **Python 3.x**
+- **pandas**
+- **networkx**
 
 You can install the required packages using pip:
 
@@ -33,45 +33,61 @@ pip install pandas networkx
 
 ## Installation
 
-Clone the repository or download the code files.
-Ensure that the input CSV files are available in a specified folder.
-Install the required Python libraries as described in the Requirements section.
+1. Clone this repository or download the code files.
+2. Ensure that the input CSV files (described in the **Usage** section) are placed in a specified folder.
+3. Install the required Python libraries using the command provided in the **Requirements** section.
 
 ## Usage
-To generate the heterogeneous graph, you need to initialize the Generate_HG class by providing the folder path where your data files are stored. The class will read the CSV files and process them to build the graph.
+
+To generate the heterogeneous graph, you need to initialize the `Generate_HG` class by providing the folder path where your data files are stored. The class will read the CSV files and process them to build the graph.
 
 ### Inputs
-CSV files must be placed in the specified folder path and should include the following files:
-PRESCRIPTIONS.csv
-DIAGNOSES_ICD.csv
-PROCEDURES_ICD.csv
-LABEVENTS.csv
-MICROBIOLOGYEVENTS.csv
+
+The CSV files must be placed in the specified folder path and should include the following files:
+
+- `PRESCRIPTIONS.csv`: Contains medication prescriptions.
+- `DIAGNOSES_ICD.csv`: Contains diagnosis information with ICD9 codes.
+- `PROCEDURES_ICD.csv`: Contains medical procedure information with ICD9 codes.
+- `LABEVENTS.csv`: Contains lab test results.
+- `MICROBIOLOGYEVENTS.csv`: Contains microbiology test results.
+
+Ensure that the files contain the appropriate columns mentioned in the code, such as `HADM_ID`, `SUBJECT_ID`, `ICD9_CODE`, and other relevant columns for proper graph generation.
+
 ### Outputs
-A heterogeneous graph is generated with the following node types:
-Patients (C)
-Visits (V)
-Diagnoses (D)
-Medications (M)
-Procedures (P)
-Lab tests (L)
-Microbiology tests (B)
-The graph edges represent the relationships between these nodes, e.g., a visit and its corresponding diagnosis, procedure, etc.
+
+The class generates a heterogeneous graph with the following node types:
+
+- **Patients (C)**: Nodes representing patients.
+- **Visits (V)**: Nodes representing hospital admissions.
+- **Diagnoses (D)**: Nodes representing diagnoses with ICD9 codes.
+- **Medications (M)**: Nodes representing prescribed medications.
+- **Procedures (P)**: Nodes representing medical procedures.
+- **Lab Tests (L)**: Nodes representing lab test results.
+- **Microbiology Tests (B)**: Nodes representing microbiology tests.
+
+Edges represent the relationships between these nodes, such as a visit and its corresponding diagnosis, procedure, or medication.
+
 ### Main Functions
-__init__(folder_path): Initializes the class and loads patient data from the given folder.
-get_Bipartite(DF, id1, id2, c1, c2, msg): Extracts bipartite networks from patient data.
-load_patients_data(): Reads patient data from CSV files, handles missing values, and processes lab tests.
-remove_isolated_nodes(): Removes isolated nodes (patients and their associated visits).
-selecting_top_labs(): Filters the graph to include only the top 480 lab tests by degree.
-update_statistics(): Updates and categorizes nodes in the graph.
+
+Here are the main functions used in the code:
+
+- **`__init__(folder_path)`**: Initializes the class and loads patient data from the specified folder.
+- **`get_Bipartite(DF, id1, id2, c1, c2, msg)`**: Extracts bipartite networks from the provided patient data (e.g., between visits and diagnoses).
+- **`load_patients_data()`**: Loads patient data from CSV files, handles missing values, processes lab tests, and creates filtered datasets for analysis.
+- **`remove_isolated_nodes()`**: Removes isolated nodes (e.g., patients and their associated visits) from the graph that do not contribute to the network.
+- **`selecting_top_labs()`**: Filters the graph to retain only the top 480 lab tests by degree (most frequently linked tests).
+- **`update_statistics()`**: Updates and categorizes nodes in the graph (e.g., separating patients, visits, diagnoses, medications, etc.).
 
 ## Graph Components
+
 The heterogeneous graph includes the following components:
 
-Patients (C): Nodes representing patients.
-Visits (V): Nodes representing visits (hospital admissions).
-Diagnoses (D): Nodes representing diagnoses.
-Medications (M): Nodes representing prescribed medications.
-Procedures (P): Nodes representing medical procedures.
-Lab Tests (L): Nodes representing lab test results.
-Microbiology Tests (B): Nodes representing microbiology tests.
+- **Patients (C)**: Nodes representing patients.
+- **Visits (V)**: Nodes representing visits (hospital admissions).
+- **Diagnoses (D)**: Nodes representing diagnoses based on ICD9 codes.
+- **Medications (M)**: Nodes representing prescribed medications.
+- **Procedures (P)**: Nodes representing medical procedures.
+- **Lab Tests (L)**: Nodes representing lab test results.
+- **Microbiology Tests (B)**: Nodes representing microbiology test results.
+
+Each node is represented by a letter code, and edges represent the connections between different entities such as a visit and a diagnosis, or a visit and a procedure.
