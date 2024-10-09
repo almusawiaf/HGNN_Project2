@@ -12,7 +12,7 @@
 #SBATCH --job-name=data_generation_15000
 
 # Set environment variables
-export MIMIC_Path='/home/almusawiaf/MyDocuments/PhD_Projects/Data/MIMIC_resources'
+export MIMIC_Path='/lustre/home/almusawiaf/PhD_Projects/MIMIC_resources'
 export disease_data_path='../Data'
 
 export NUM_DISEASES=203
