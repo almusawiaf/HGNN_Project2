@@ -32,4 +32,3 @@ output_dir="/home/almusawiaf/MyDocuments/PhD_Projects/HGNN_Project2/Data_Generat
 mkdir -p $output_dir
 
 jupyter nbconvert --to notebook --execute main_cpu.ipynb                  --output $output_dir/main_cpu_${NUM_DISEASES}_${num_Sample}_${DISEASE_FILE}_${experiment_name}.ipynb
-# jupyter nbconvert --to notebook --execute main_Reduction_Only.ipynb                  --output $output_dir/main_Reduction_Only_${NUM_DISEASES}_${num_Sample}_${DISEASE_FILE}_${experiment_name}.ipynb
