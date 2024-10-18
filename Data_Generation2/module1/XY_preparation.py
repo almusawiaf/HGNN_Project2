@@ -5,9 +5,7 @@ We only included patients with diagnoses.
 import numpy as np
 import networkx as nx
 
-<<<<<<< HEAD
-class XY_preparation:    
-=======
+
 def remove_patients_and_linked_visits(nodes, HG):
     """
     Remove patients and their linked visits from the graph HG.
@@ -36,10 +34,12 @@ def remove_patients_and_linked_visits(nodes, HG):
     
     return HG
 
+
 '''
 generate_HG is class used to generate the 203 heterogeneous graph only.
 We only included patients with diagnoses.
 '''
+
 
 class XY_preparation:
     icd_code_ranges = [
@@ -64,7 +64,6 @@ class XY_preparation:
         ]
 
     
->>>>>>> 7aa0944 (Updating XY and HG)
     def __init__(self, HG):
 
         self.set_HG_components(HG)
