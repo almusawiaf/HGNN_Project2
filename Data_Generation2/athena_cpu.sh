@@ -28,4 +28,4 @@ experiment_name="245K_patients_PSGs"
 output_dir="/lustre/home/almusawiaf/PhD_Projects/HGNN_Project2/Data_Generation2/experiments"
 mkdir -p $output_dir
 
-jupyter nbconvert --to notebook --execute main_cpu.ipynb                  --output $output_dir/main_cpu_${NUM_DISEASES}_${num_Sample}_${DISEASE_FILE}_${experiment_name}.ipynb
+jupyter nbconvert --to notebook --execute main.ipynb --output $output_dir/main_${NUM_DISEASES}_${num_Sample}_${DISEASE_FILE}_${experiment_name}.ipynb
