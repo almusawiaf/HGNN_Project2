@@ -19,7 +19,7 @@ export NUM_DISEASES=203
 export DISEASE_FILE='DMPLB2'
 export similarity_type='PC'
 
-export num_Sample=54545
+export num_Sample=66666
 export r_u_sampling='False'
 export PSGs_ing='False'
 experiment_name="ALL_MIMIC_XY_changes"

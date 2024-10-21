@@ -165,7 +165,7 @@ class XY_preparation:
         N = [i for i, v in enumerate(self.Nodes) if v[0] == 'C']
 
         # Step 2: Calculate the row sums for the selected rows
-        row_sums = np.sum(Y[N], axis=1)
+        row_sums = np.sum(self.Y[N], axis=1)
 
         # Step 3: Identify which rows have a zero sum
         zero_sum_rows = row_sums == 0
@@ -188,8 +188,8 @@ class XY_preparation:
 
         def get_the_index_of_range(i):
             new_ICD_range = []
-            for (s,e) in icd_code_ranges:
-                if (s,e) != icd_code_ranges[-1]:
+            for (s,e) in self.icd_code_ranges:
+                if (s,e) != self.icd_code_ranges[-1]:
                     new_ICD_range.append([int(s), int(e)])
             # ++++++++++++++++++++++++++++++++++++++++++++++
             if i[2] in ['V', 'E']:
@@ -202,7 +202,7 @@ class XY_preparation:
         # =============================================================
         superclass_Y = []
         for y in self.Y:
-            temp_Y = [0] * len(icd_code_ranges)
+            temp_Y = [0] * len(self.icd_code_ranges)
 
             # 1. get the set of diagnoses per node...
             D_y = get_D(y)
@@ -226,8 +226,8 @@ class XY_preparation:
 
         def get_the_index_of_range(i):
             new_ICD_range = []
-            for (s,e) in icd_code_ranges:
-                if (s,e) != icd_code_ranges[-1]:
+            for (s,e) in self.icd_code_ranges:
+                if (s,e) != self.icd_code_ranges[-1]:
                     new_ICD_range.append([int(s), int(e)])
             # ++++++++++++++++++++++++++++++++++++++++++++++
             if i[2] in ['V', 'E']:
@@ -252,6 +252,6 @@ class XY_preparation:
                 
                 Y.append(and_over_rows(temp_Y))
             else:
-                Y.append([0] * len(icd_code_ranges))
+                Y.append([0] * len(self.icd_code_ranges))
 
 
