@@ -19,10 +19,10 @@ export NUM_DISEASES=203
 export DISEASE_FILE='DMPLB2'
 export similarity_type='PC'
 
-export num_Sample=66666
+export num_Sample=60001
 export r_u_sampling='False'
 export PSGs_ing='False'
-experiment_name="ALL_MIMIC_XY_changes"
+experiment_name="ALL_MIMIC_XY_meta_path_enhanced"
 
 
 # Create a new directory with the job name and timestamp
