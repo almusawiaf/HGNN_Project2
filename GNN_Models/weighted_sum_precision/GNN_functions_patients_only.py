@@ -22,6 +22,11 @@ def load_dict_from_pickle(filename):
         loaded_dict = pickle.load(file)
     return loaded_dict
 
+def save_list_as_pickle(L, given_path, file_name):
+    import pickle
+    print(f'saving to {given_path}/{file_name}.pkl')
+    with open(f'{given_path}/{file_name}.pkl', 'wb') as file:
+        pickle.dump(L, file)
 
 def plot_combined_metrics_and_loss(losses, val_metrics):
     epochs = range(1, len(losses) + 1)
@@ -233,15 +238,16 @@ def select_top_diagnoses(Y, num_diagnoses=10):
     return top_diagnoses_matrix
 
 
-def load_data(file_path, device, super_class, num_D, num_Meta_Path = 5):
+def load_data(file_path, device, super_class, num_D):
     
     '''Using patients nodes for verifying only...'''
 
-    num_As = num_Meta_Path
     temp_Y = torch.load(f'{file_path}/OHV/Y{super_class}.pt')
     Y = select_top_diagnoses(temp_Y, num_D)
     X = torch.load(f'{file_path}/OHV/X.pt')    
-    
+    meta_path_list = load_dict_from_pickle(f'{file_path}/HGNN_data/edges/final_meta_paths.pkl')
+    num_As = len(meta_path_list)
+        
     # # reading patient information...
     # Nodes = load_dict_from_pickle(f'{file_path}/GMLs/Nodes.pkl')
     # patient_indices = [i for i, node in enumerate(Nodes) if node[0]=='C']  # Identify patient nodes
@@ -255,7 +261,7 @@ def load_data(file_path, device, super_class, num_D, num_Meta_Path = 5):
     edge_index = torch.tensor([sources, targets], dtype=torch.long)
     edge_index = edge_index.to(device)
 
-    edge_weight = [torch.tensor(reading_pickle(f'{file_path}/HGNN_data/edges/edge_weight{i}.pkl')).to(device) for i in range(num_As)]
+    edge_weight = [torch.tensor(reading_pickle(f'{file_path}/HGNN_data/edges/{f}.pkl')).to(device) for f in meta_path_list]
 
     if isinstance(X, np.ndarray):
         X = torch.tensor(X, dtype=torch.float).to(device)
@@ -278,7 +284,7 @@ def load_data(file_path, device, super_class, num_D, num_Meta_Path = 5):
     Y = torch.nan_to_num(Y)
 
     # return X, Y, edge_index, edge_weight, patient_indices, total_nodes
-    return X, Y, edge_index, edge_weight
+    return X, Y, edge_index, edge_weight, meta_path_list
 
 def prepare_masks(Nodes_Path):
     # Reading the Nodes, and all other splits...
@@ -403,14 +409,16 @@ def main(file_path,
          lr=1e-5, 
          exp_name = 'emb_result',
          super_class = '',
-         num_Meta_Path = 5,
          top_k = 15,
          num_D = 10):
     
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
     print(f'\t- Loading the data...\n{file_path}')
-    X, Y, edge_index, edge_weight = load_data(file_path, device, super_class, num_Meta_Path=num_Meta_Path, num_D = num_D)
+    X, Y, edge_index, edge_weight, meta_path_list = load_data(file_path, 
+                                                              device, 
+                                                              super_class, 
+                                                              num_D = num_D)
     
     print('\t- Generating the Data structure ...')
     data = Data(x=X, y=Y, edge_index=edge_index, As=edge_weight) 
@@ -511,10 +519,13 @@ def main(file_path,
     labels = [f'Class {i}' for i in range(num_classes)]  # Replace with actual class names if available
     create_multilabel_confusion_matrix(pred, correct, labels)
     
-    print('The weights of the similarity matrices are as follows:')
-    print(model.weighted_sum.get_weights().cpu().detach().numpy())
+    weights = model.weighted_sum.get_weights().cpu().detach().numpy()
+    meta_path_weights = {f: weights[i] for i,f in enumerate(meta_path_list)}
+    save_list_as_pickle(meta_path_weights, 
+                        file_path,
+                        'meta_path_weights')
     
-    return losses, val_precisions
+    return losses, val_precisions, meta_path_weights
 
 
 

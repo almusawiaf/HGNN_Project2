@@ -46,10 +46,8 @@ class Reduction:
         
     def read_Ws(self, saving_path, folder_name):
         '''reading the similarity matrices and corresponding names'''
-        selected_i = load_dict_from_pickle(f"{saving_path}/{folder_name}/selected_i.pkl")
-        print(selected_i[-1])
         metapath_list = load_dict_from_pickle(f'{saving_path}/{folder_name}/metapath_list.pkl')
-        return [self.get_edges_dict(f'{saving_path}/{folder_name}/sparse_matrix_{i}.npz') for i in selected_i], metapath_list
+        return [self.get_edges_dict(f'{saving_path}/{folder_name}/{f}.npz') for f in metapath_list], metapath_list
 
     def read_PSGs(self, base_path):
         '''reading the PSG matrices and corresponding names'''
@@ -101,9 +99,9 @@ class Reduction:
         
         print('done saving [unique edges]: ', len(unique_edges))        
 
-        # ======================================== Reflect the (edge_list) into all A's =======================================
+        # ================= Reflect the (edge_list) into all A's =====================
         for i, d in enumerate(D):
-            print(f'Working on {i}th file...')
+            print(f'Working on {i}th file ({selected_meta_paths[i]})...')
             results = []
             for e in unique_edges:
                 if e in d:
@@ -111,12 +109,12 @@ class Reduction:
                 else:
                     results.append(0)
                     
-            with open(f'{saving_path}/edges/edge_weight{i}.pkl', 'wb') as file:
+            with open(f'{saving_path}/edges/{selected_meta_paths[i]}.pkl', 'wb') as file:
                 pickle.dump(results, file)
         
         # saving the selected_meta_paths
         
-        save_list_as_pickle(selected_meta_paths, f'{saving_path}/edges', 'selected_meta_paths')
+        save_list_as_pickle(selected_meta_paths, f'{saving_path}/edges', 'final_meta_paths')
     
     
     def get_SNF(self):
