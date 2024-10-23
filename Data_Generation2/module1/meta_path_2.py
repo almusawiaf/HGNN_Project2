@@ -53,6 +53,7 @@ class Meta_path:
         W_vl = self.subset_adjacency_matrix(self.Visits + self.Labs)  
         W_vb = self.subset_adjacency_matrix(self.Visits + self.MicroBio)   
         
+        
         self.save_sparse(W_cv, 0)
         self.save_sparse(W_vm, 1)
         self.save_sparse(W_vd, 2)
@@ -116,10 +117,22 @@ class Meta_path:
         self.M(W_vp, W_vp.T, 'Visit-Procedure-Visit', 28)
         self.M(W_vl, W_vl.T, 'Visit-Lab-Visit', 29)
         self.M(W_vb, W_vb.T, 'Visit-MicroBiology-Visit', 30)
-        
+
+        metapath_List = [
+            'cv', 'vm', 'vd', 'vp', 'vl', 'vb',
+            'cvm', 'cvd', 'cvp', 'cvl', 'cvb',
+            'dvm', 'dvp', 'dvl', 'dvb',
+            'pvm', 'pvl', 'pvb', 
+            'mvl', 'mvb',
+            'lvb',
+            'cvmvc', 'cvdvc', 'cvpvc', 'cvlvc', 'cvbvc',
+            'vmv', 'vdv', 'vpv', 'vlv', 'vbv'
+            ]
+        meta_path_dict = {k:p for k, p in enumerate(metapath_List)}
        
         # ======================================================================================       
         save_list_as_pickle([i for i in range(31)], f"{saving_path}/As", 'selected_i')
+        save_list_as_pickle(meta_path_dict, f"{saving_path}/As", 'metapath_list')
         
         
     def save_sparse(self, A, i):

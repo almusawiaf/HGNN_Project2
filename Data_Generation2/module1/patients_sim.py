@@ -2,7 +2,13 @@ from sklearn.metrics.pairwise import euclidean_distances, cosine_similarity
 from scipy import sparse
 import numpy as np
 
-
+def save_list_as_pickle(L, given_path, file_name):
+    import pickle
+    print(f'saving to {given_path}/{file_name}.pkl')
+    with open(f'{given_path}/{file_name}.pkl', 'wb') as file:
+        pickle.dump(L, file)
+        
+        
 class Patients_Similarity:
     
     def __init__(self, HG, Nodes, PSGs_path):
@@ -26,6 +32,7 @@ class Patients_Similarity:
         for code in ['M', 'D', 'P', 'L', 'B']:
             self.process(code)
         # ======================================================
+        save_list_as_pickle(['M', 'D', 'P', 'L', 'B'], f'{self.PSGs_path}/PSGs', 'PSGs_List')
 
         
     def process(self, Code):

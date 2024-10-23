@@ -33,21 +33,28 @@ class Reduction:
         
     def __init__(self, base_path = '', gpu = False, PSGs = False):
         saving_path = f'{base_path}/HGNN_data/'                        
-        Ws1 = self.read_Ws(saving_path, 'As')
+        Ws1, meta_path_list = self.read_Ws(saving_path, 'As')
         if PSGs:
-            Ws2 = self.read_PSGs(base_path)
+            Ws2, PSGs_List = self.read_PSGs(base_path)
+            
             Ws1 = Ws1 + Ws2
+            meta_path_list = meta_path_list + PSGs_List
 
-        Ws = self.selecting_high_edges(Ws1)
-        self.final_Ws_with_unique_list_of_edges(Ws, saving_path)        
+        Ws, selected_meta_paths = self.selecting_high_edges(Ws1, meta_path_list)
+        self.final_Ws_with_unique_list_of_edges(Ws, selected_meta_paths, saving_path)    
+            
         
     def read_Ws(self, saving_path, folder_name):
+        '''reading the similarity matrices and corresponding names'''
         selected_i = load_dict_from_pickle(f"{saving_path}/{folder_name}/selected_i.pkl")
         print(selected_i[-1])
-        return [self.get_edges_dict(f'{saving_path}/{folder_name}/sparse_matrix_{i}.npz') for i in selected_i]
+        metapath_list = load_dict_from_pickle(f'{saving_path}/{folder_name}/metapath_list.pkl')
+        return [self.get_edges_dict(f'{saving_path}/{folder_name}/sparse_matrix_{i}.npz') for i in selected_i], metapath_list
 
     def read_PSGs(self, base_path):
-        return [self.get_edges_dict(f'{base_path}/PSGs/{i}.npz') for i in ['B', 'D', 'L', 'M', 'P']]
+        '''reading the PSG matrices and corresponding names'''
+        PSGs_List = load_dict_from_pickle(f'{base_path}/PSGs/PSGs_List.pkl')
+        return [self.get_edges_dict(f'{base_path}/PSGs/{i}.npz') for i in ['B', 'D', 'L', 'M', 'P']], PSGs_List
 
     def get_edges_dict(self, the_path):
         A = sparse.load_npz(the_path)
@@ -57,9 +64,9 @@ class Reduction:
         upper_triangle_positive = {(row, col): data for row, col, data in zip(A.row[filtered_entries], A.col[filtered_entries], A.data[filtered_entries])}
         return upper_triangle_positive
 
-    def selecting_high_edges(self, Ws):
+    def selecting_high_edges(self, Ws, meta_path_list):
         '''Selecting top weighted edges'''
-        D = []
+        D, D_names = [], []
         for i, A in enumerate(Ws):
             # A is a dictionary, no need to check for sparsity
             num_non_zeros = len(A)
@@ -74,13 +81,14 @@ class Reduction:
                     print(f"\tSaving all non-zero values... ({num_non_zeros} non-zero elements)")
             
                 D.append(B)  # Store the dictionary directly
+                D_names.append(meta_path_list[i])
             else:
                 print(f'Matrix {i} has zero values. Not saving...')
         
-        return D
+        return D, D_names
 
 
-    def final_Ws_with_unique_list_of_edges(self, D, saving_path):        
+    def final_Ws_with_unique_list_of_edges(self, D, selected_meta_paths, saving_path):        
         '''creating and saving the last representation of the edges_list and edges_weight'''
         sorted_list_of_dicts = sorted(D, key=lambda x: len(x), reverse=True)        
         unique_edges = set()        
@@ -106,7 +114,9 @@ class Reduction:
             with open(f'{saving_path}/edges/edge_weight{i}.pkl', 'wb') as file:
                 pickle.dump(results, file)
         
-            
+        # saving the selected_meta_paths
+        
+        save_list_as_pickle(selected_meta_paths, f'{saving_path}/edges', 'selected_meta_paths')
     
     
     def get_SNF(self):
