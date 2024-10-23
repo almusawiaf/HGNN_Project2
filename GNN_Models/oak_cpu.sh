@@ -7,7 +7,7 @@
 #SBATCH --ntasks=1                        # Request one task (process)
 #SBATCH --cpus-per-task=40                # Request four CPU cores per task
 #SBATCH --qos=short
-#SBATCH --mem=2800G
+#SBATCH --mem=1400G
 
 
 #SBATCH --job-name=SAGE
@@ -18,8 +18,8 @@ export NUM_DISEASES=203
 export NUM_TOP_DISEASES=10
 export DISEASE_FILE='DMPLB2'
 export num_Meta_Path=30
-export num_epochs=1000
-export experiment_name='DMPLB2_1K_eps_sim_added'
+export num_epochs=500
+export experiment_name='DMPLB2_1K_eps_sim_added_superclasses'
 
 output_dir="experiments/${NUM_DISEASES}_Diagnoses/${DISEASE_FILE}/${num_Sample}"
 mkdir -p $output_dir
