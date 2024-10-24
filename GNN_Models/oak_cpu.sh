@@ -13,11 +13,10 @@
 #SBATCH --job-name=SAGE
 
 # Set environment variables
-export num_Sample=66666
+export num_Sample=60001
 export NUM_DISEASES=203
 export NUM_TOP_DISEASES=10
 export DISEASE_FILE='DMPLB2'
-export num_Meta_Path=30
 export num_epochs=500
 export experiment_name='DMPLB2_1K_eps_sim_added_superclasses'
 

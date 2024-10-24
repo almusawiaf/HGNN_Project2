@@ -109,6 +109,7 @@ def evaluate(model, data, mask, k):
         
         # Convert to CPU and numpy for sklearn metrics
         true_labels_np = true_labels.cpu().numpy()
+        
         binary_preds_np = binary_preds.cpu().numpy()
         preds_np = preds.cpu().numpy()
         
@@ -140,7 +141,6 @@ def evaluate(model, data, mask, k):
             'recall': recall_macro,
             'f1_score': f1_macro,
             'auc': auc,
-            # Include top-k precision
             'top_k_1': top_k_precision(true_labels_np, preds_np, k=10),
             'top_k_pred': top_k_precision(true_labels_np, preds, k=4),
             # 'hamming_loss': hamming,
